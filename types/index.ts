@@ -8,6 +8,7 @@ export interface Company {
   overview: string;
   glassdoorRating: number;
   interviewDifficulty: string;
+  emailDomain: string;
   freeContent: {
     salaryTable: SalaryRow[];
     hiringSpecs: string[];
@@ -42,6 +43,7 @@ export interface InsiderPost {
   teaser: string;
   likes: number;
   dislikes: number;
+  verified?: boolean;
   paidContent: {
     salaryRange: { min: string; max: string; median: string };
     detailedReview: string;

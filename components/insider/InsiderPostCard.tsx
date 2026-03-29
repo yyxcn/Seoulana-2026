@@ -22,6 +22,10 @@ interface Props {
 
 export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, userVote, onVote }: Props) {
   const { publicKey, signTransaction, connected } = useWallet();
+
+  // Check if the connected wallet is the author of this post
+  const isOwnPost = connected && publicKey && post.author.walletAddress === publicKey.toBase58();
+  const effectiveUnlocked = isUnlocked || !!isOwnPost;
   const { connection } = useConnection();
   const { setVisible } = useWalletModal();
   const [loading, setLoading] = useState(false);
@@ -96,7 +100,7 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
   };
 
   const handleExpand = () => {
-    if (isUnlocked) {
+    if (effectiveUnlocked) {
       setExpanded(!expanded);
       if (!paidContent) setPaidContent(post.paidContent);
     }
@@ -107,9 +111,11 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
       layout
       className={cn(
         "rounded-2xl border bg-white transition-all duration-300",
-        isUnlocked
-          ? "border-violet-100 shadow-sm"
-          : "border-gray-100 hover:border-gray-200 hover:shadow-sm"
+        isOwnPost
+          ? "border-violet-200 shadow-sm ring-1 ring-violet-100"
+          : effectiveUnlocked
+            ? "border-violet-100 shadow-sm"
+            : "border-gray-100 hover:border-gray-200 hover:shadow-sm"
       )}
     >
       {/* Author & Teaser */}
@@ -123,7 +129,12 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-gray-800">{post.author.alias}</span>
               <Shield className="w-3 h-3 text-violet-500" />
-              {isUnlocked && (
+              {isOwnPost && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 text-violet-600 border border-violet-200">
+                  Your Post
+                </span>
+              )}
+              {!isOwnPost && effectiveUnlocked && (
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600">
                   <Check className="w-2.5 h-2.5" />
                   Unlocked
@@ -154,14 +165,14 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
         {/* Like / Dislike — visible to all, votable only by unlockers */}
         <div className="mt-3 flex items-center gap-3">
           <button
-            onClick={() => isUnlocked && onVote(post.id, "like")}
-            disabled={!isUnlocked}
-            title={isUnlocked ? "Like" : "Unlock to vote"}
+            onClick={() => effectiveUnlocked && onVote(post.id, "like")}
+            disabled={!effectiveUnlocked}
+            title={effectiveUnlocked ? "Like" : "Unlock to vote"}
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
               userVote === "like"
                 ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                : isUnlocked
+                : effectiveUnlocked
                   ? "bg-gray-50 text-gray-500 border border-gray-100 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200"
                   : "bg-gray-100 text-gray-500 border border-gray-200 cursor-default"
             )}
@@ -170,14 +181,14 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
             {likes}
           </button>
           <button
-            onClick={() => isUnlocked && onVote(post.id, "dislike")}
-            disabled={!isUnlocked}
-            title={isUnlocked ? "Dislike" : "Unlock to vote"}
+            onClick={() => effectiveUnlocked && onVote(post.id, "dislike")}
+            disabled={!effectiveUnlocked}
+            title={effectiveUnlocked ? "Dislike" : "Unlock to vote"}
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
               userVote === "dislike"
                 ? "bg-red-50 text-red-500 border border-red-200"
-                : isUnlocked
+                : effectiveUnlocked
                   ? "bg-gray-50 text-gray-500 border border-gray-100 hover:bg-red-50 hover:text-red-500 hover:border-red-200"
                   : "bg-gray-100 text-gray-500 border border-gray-200 cursor-default"
             )}
@@ -185,13 +196,13 @@ export function InsiderPostCard({ post, isUnlocked, onUnlock, likes, dislikes, u
             <ThumbsDown className={cn("w-3.5 h-3.5", userVote === "dislike" && "fill-red-400")} />
             {dislikes}
           </button>
-          {!isUnlocked && (
+          {!effectiveUnlocked && (
             <span className="text-[10px] text-gray-500 font-medium">Unlock to vote</span>
           )}
         </div>
 
         {/* Action Button */}
-        {!isUnlocked ? (
+        {!effectiveUnlocked ? (
           <div className="mt-4">
             <button
               onClick={handleUnlock}

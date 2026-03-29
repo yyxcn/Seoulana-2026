@@ -1,0 +1,247 @@
+{
+  "address": "4mq4iCgb1wh8t2AXEd2qP8Gw2qrNgy5Avinte9yNLQCc",
+  "metadata": {
+    "name": "xpay_insider",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "xPay Insider - on-chain review registration"
+  },
+  "instructions": [
+    {
+      "name": "register_review",
+      "docs": [
+        "Register an insider review on-chain.",
+        "Stores metadata + review content hash. The full review text lives off-chain."
+      ],
+      "discriminator": [
+        117,
+        154,
+        53,
+        170,
+        127,
+        20,
+        150,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "review",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  118,
+                  105,
+                  101,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "author"
+              },
+              {
+                "kind": "arg",
+                "path": "company_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "author",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "company_id",
+          "type": "string"
+        },
+        {
+          "name": "role",
+          "type": "string"
+        },
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "review_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "verified",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "ReviewAccount",
+      "discriminator": [
+        119,
+        177,
+        213,
+        232,
+        143,
+        161,
+        255,
+        66
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "ReviewRegistered",
+      "discriminator": [
+        134,
+        124,
+        105,
+        108,
+        221,
+        224,
+        11,
+        188
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "StringTooLong",
+      "msg": "String exceeds maximum length"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidPrice",
+      "msg": "Price must be greater than zero"
+    }
+  ],
+  "types": [
+    {
+      "name": "ReviewAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "author",
+            "docs": [
+              "The insider's wallet address (receives 70% of unlock payments)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "company_id",
+            "docs": [
+              "Company identifier (e.g. \"nvidia\", \"google\")"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "docs": [
+              "Role at the company"
+            ],
+            "type": "string"
+          },
+          {
+            "name": "price_lamports",
+            "docs": [
+              "Price in lamports to unlock this review"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "review_hash",
+            "docs": [
+              "SHA-256 hash of the full review content"
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verified",
+            "docs": [
+              "Whether the insider verified their company email"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "docs": [
+              "Unix timestamp of registration"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReviewRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "author",
+            "type": "pubkey"
+          },
+          {
+            "name": "company_id",
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "type": "string"
+          },
+          {
+            "name": "price_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "review_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verified",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

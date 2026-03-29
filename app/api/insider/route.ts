@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
   const aliasNum = Math.floor(Math.random() * 9000 + 1000);
   const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
   const postId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  const price = Math.max(0.001, Math.min(0.01, parseFloat(body.price) || 0.003));
 
   const post: InsiderPost = {
     id: postId,
@@ -37,8 +38,8 @@ export async function POST(request: NextRequest) {
       tenure: body.tenure || "N/A",
       avatarColor: color,
     },
-    price: 0.0003,
-    priceLabel: "0.0003 SOL",
+    price,
+    priceLabel: `${price} SOL`,
     createdAt: new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" }),
     teaser: body.review.slice(0, 140) + (body.review.length > 140 ? "..." : ""),
     likes: 0,
