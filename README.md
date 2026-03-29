@@ -4,6 +4,33 @@
 
 A Blind-style professional community where insiders at NVIDIA, Google, Meta, Apple, and more share salary data, interview experiences, and honest reviews. Readers unlock content via the x402 protocol + Solana micropayments, and **70% of every payment is automatically routed to the insider** in a single atomic transaction. Review registration is recorded **on-chain** via an Anchor smart contract.
 
+## Quick Start
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Set up environment
+cp .env.example .env.local
+# Edit .env.local → set NEXT_PUBLIC_PAYMENT_RECEIVER to your Phantom public key
+
+# 3. Run dev server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and connect your Phantom wallet (Devnet).
+
+**Requirements:**
+- Node.js 18+
+- Phantom wallet set to **Devnet**
+- Devnet SOL from [faucet.solana.com](https://faucet.solana.com/)
+
+**Costs per action:**
+| Action | Cost |
+|---|---|
+| Register a review (on-chain) | ~0.002 SOL (PDA rent) |
+| Unlock a review (x402 payment) | 0.003–0.01 SOL (70/30 split) |
+
 ## Why Solana?
 
 On Ethereum, a $0.40 micropayment costs $2–5 in gas. On Visa/Stripe, the minimum fee is $0.30. On Solana: **0.003 SOL (~$0.40), confirmed in ~400ms, with split payment to two wallets in one transaction.**
@@ -33,6 +60,14 @@ No escrow, no settlement delay. The insider receives their share the instant a r
 - PDA seeds `["review", author, company_id]` prevent duplicate reviews
 - Registration costs ~0.002 SOL (account rent)
 - Success screen links to **Solana Explorer**
+
+### Email Verification (Insider Identity)
+Before submitting a review, insiders must verify their company email (e.g. `you@nvidia.com`).
+1. Select a company → enter your work email
+2. Receive a 6-digit verification code (demo mode shows the code on screen)
+3. Enter the code → verified badge appears on your review
+
+This proves the reviewer is an actual employee. In production, codes would be sent via email (SendGrid/Resend). For the demo, the code is displayed directly in the UI.
 
 ### Wallet = Identity
 - Connect Wallet = Login, Disconnect = Logout
@@ -100,23 +135,6 @@ Client                              Server
 
 **Program ID**: `4mq4iCgb1wh8t2AXEd2qP8Gw2qrNgy5Avinte9yNLQCc`
 
-## Getting Started
-
-```bash
-npm install
-cp .env.example .env.local
-# Edit .env.local → set NEXT_PUBLIC_PAYMENT_RECEIVER to your Phantom public key
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-**Prerequisites:**
-- Phantom wallet set to **Devnet**
-- Devnet SOL from [faucet.solana.com](https://faucet.solana.com/)
-- ~0.002 SOL per review registration (PDA account rent)
-- ~0.003–0.01 SOL per review unlock (split payment)
-
 ## Project Structure
 
 ```
@@ -124,12 +142,13 @@ xpay-insider/
 ├── app/
 │   ├── api/
 │   │   ├── insider/route.ts              # Insider review registration API
-│   │   └── posts/[id]/route.ts           # x402 protected content endpoint
+│   │   ├── posts/[id]/route.ts           # x402 protected content endpoint
+│   │   └── verify-email/route.ts         # Email verification (send/verify code)
 │   └── page.tsx                          # Main app shell
 ├── components/
 │   ├── company/CompanyProfile.tsx         # Company panel (3 tabs)
 │   ├── insider/
-│   │   ├── InsiderEditor.tsx             # On-chain review submission modal
+│   │   ├── InsiderEditor.tsx             # Email verify → on-chain review submission
 │   │   ├── InsiderPostCard.tsx           # x402 payment + like/dislike
 │   │   └── InsiderPostList.tsx           # Post list wrapper
 │   ├── layout/Sidebar.tsx                # Company sidebar with post counts
