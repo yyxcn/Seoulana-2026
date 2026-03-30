@@ -4,7 +4,7 @@ export const companies: Company[] = [
   {
     id: "nvidia",
     name: "NVIDIA",
-    logo: "🟢",
+    logo: "/logos/nvidia.svg",
     industry: "Semiconductors & AI",
     headquarters: "Santa Clara, CA",
     employeeCount: "29,600+",
@@ -25,7 +25,7 @@ export const companies: Company[] = [
   {
     id: "google",
     name: "Google",
-    logo: "🔵",
+    logo: "/logos/google.svg",
     industry: "Search & Cloud & AI",
     headquarters: "Mountain View, CA",
     employeeCount: "182,000+",
@@ -46,7 +46,7 @@ export const companies: Company[] = [
   {
     id: "meta",
     name: "Meta",
-    logo: "🔷",
+    logo: "/logos/meta.svg",
     industry: "Social Media & AI",
     headquarters: "Menlo Park, CA",
     employeeCount: "67,000+",
@@ -67,7 +67,7 @@ export const companies: Company[] = [
   {
     id: "apple",
     name: "Apple",
-    logo: "🍎",
+    logo: "/logos/apple.svg",
     industry: "Consumer Electronics & Software",
     headquarters: "Cupertino, CA",
     employeeCount: "164,000+",
@@ -88,7 +88,7 @@ export const companies: Company[] = [
   {
     id: "stripe",
     name: "Stripe",
-    logo: "💜",
+    logo: "/logos/stripe.svg",
     industry: "Fintech & Payments",
     headquarters: "San Francisco, CA",
     employeeCount: "8,000+",
@@ -109,7 +109,7 @@ export const companies: Company[] = [
   {
     id: "openai",
     name: "OpenAI",
-    logo: "🤖",
+    logo: "/logos/openai.svg",
     industry: "AI Research & Products",
     headquarters: "San Francisco, CA",
     employeeCount: "3,000+",
@@ -130,7 +130,7 @@ export const companies: Company[] = [
   {
     id: "amazon",
     name: "Amazon",
-    logo: "📦",
+    logo: "/logos/amazon.svg",
     industry: "E-commerce & Cloud (AWS)",
     headquarters: "Seattle, WA",
     employeeCount: "1,500,000+",
@@ -151,7 +151,7 @@ export const companies: Company[] = [
   {
     id: "coinbase",
     name: "Coinbase",
-    logo: "🪙",
+    logo: "/logos/coinbase.svg",
     industry: "Crypto & Web3",
     headquarters: "Remote-first",
     employeeCount: "3,400+",
@@ -172,7 +172,7 @@ export const companies: Company[] = [
   {
     id: "netflix",
     name: "Netflix",
-    logo: "🔴",
+    logo: "/logos/netflix.svg",
     industry: "Streaming & Entertainment",
     headquarters: "Los Gatos, CA",
     employeeCount: "13,000+",
@@ -193,7 +193,7 @@ export const companies: Company[] = [
   {
     id: "tesla",
     name: "Tesla",
-    logo: "⚡",
+    logo: "/logos/tesla.svg",
     industry: "EV & Autonomous Driving",
     headquarters: "Austin, TX",
     employeeCount: "140,000+",

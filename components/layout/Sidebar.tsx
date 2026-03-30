@@ -79,7 +79,7 @@ function CompanyRow({
           : "border-l-2 border-transparent hover:bg-gray-50"
       )}
     >
-      <span className="text-2xl">{company.logo}</span>
+      <img src={company.logo} alt={company.name} className="w-8 h-8 object-contain" />
       <div className="flex-1 min-w-0">
         <p
           className={cn(

@@ -35,7 +35,7 @@ export function CompanyProfile({ company, insiderPosts, isUnlocked, onUnlock, ge
       {/* Company Header */}
       <div className="px-8 pt-8 pb-6 border-b border-gray-100 bg-white">
         <div className="flex items-start gap-4">
-          <div className="text-5xl">{company.logo}</div>
+          <img src={company.logo} alt={company.name} className="w-14 h-14 object-contain" />
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
             <p className="text-sm text-gray-500 mt-1">{company.industry}</p>
