@@ -8,7 +8,7 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Shield, Send, X, Mail, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
 import { companies } from "@/lib/data/companies";
 import { cn } from "@/lib/utils";
-import { getProgram } from "@/lib/anchor/program";
+import { getProgram, getReviewPDA } from "@/lib/anchor/program";
 import { BN } from "@coral-xyz/anchor";
 
 type Step = "email" | "code" | "review";
@@ -53,6 +53,7 @@ export function InsiderEditor({ onClose }: Props) {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const selectedCompanyDomain = companies.find((c) => c.id === emailCompanyId)?.emailDomain;
 
@@ -124,6 +125,7 @@ export function InsiderEditor({ onClose }: Props) {
     }
 
     setSubmitting(true);
+    setSubmitError(null);
     try {
       // Step 1: Build review content string and compute SHA-256 hash
       const reviewContent = JSON.stringify({
@@ -145,13 +147,20 @@ export function InsiderEditor({ onClose }: Props) {
       const program = getProgram(connection, anchorWallet);
       const priceLamports = Math.round(parseFloat(form.price) * LAMPORTS_PER_SOL);
 
+      const reviewPDA = getReviewPDA(publicKey, form.companyId);
+
       const tx = await program.methods
         .registerReview(
           form.companyId,
           form.role,
           new BN(priceLamports),
-          reviewHash
+          reviewHash,
+          true // verified (email verified in previous step)
         )
+        .accounts({
+          review: reviewPDA,
+          author: publicKey,
+        })
         .rpc();
 
       setTxSignature(tx);
@@ -171,11 +180,10 @@ export function InsiderEditor({ onClose }: Props) {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Transaction failed";
       if (msg.includes("User rejected")) {
-        // User cancelled in wallet — do nothing
+        setSubmitError("서명이 거부되었습니다. 다시 시도해주세요.");
       } else {
-        // Fallback: still show success for demo
         console.error("On-chain registration error:", msg);
-        setSubmitted(true);
+        setSubmitError(`트랜잭션 실패: ${msg}`);
       }
     } finally {
       setSubmitting(false);
@@ -561,6 +569,11 @@ export function InsiderEditor({ onClose }: Props) {
           </div>
 
           {/* Submit */}
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">
+              {submitError}
+            </div>
+          )}
           <div className="flex items-center justify-between pt-2">
             <p className="text-xs text-gray-400">
               Your wallet ({publicKey?.toBase58().slice(0, 6)}…) will be your anonymous identity

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "@/hooks/useAuth";
 import { companies } from "@/lib/data/companies";
 import { getInsiderPostsByCompany } from "@/lib/data/insiderPosts";
 import { useUnlockStore } from "@/hooks/useUnlockStore";
@@ -27,8 +28,9 @@ const InsiderEditor = dynamic(
 );
 
 function AppShell() {
-  const { publicKey, connected } = useWallet();
-  const walletAddress = connected && publicKey ? publicKey.toBase58() : null;
+  const { publicKey } = useWallet();
+  const { isAuthenticated } = useAuth();
+  const walletAddress = isAuthenticated && publicKey ? publicKey.toBase58() : null;
 
   const [selectedId, setSelectedId] = useState<string | null>("nvidia");
   const [showEditor, setShowEditor] = useState(false);

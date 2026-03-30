@@ -5,10 +5,12 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useEffect, useState } from "react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { shortenAddress } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Header() {
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
+  const { isAuthenticated, isSigning, authError } = useAuth();
   const [balance, setBalance] = useState<number | null>(null);
 
   useEffect(() => {
@@ -54,7 +56,17 @@ export function Header() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {connected && balance !== null && (
+          {isSigning && (
+            <span className="text-xs font-medium text-amber-600 animate-pulse">
+              서명 대기중...
+            </span>
+          )}
+          {authError && (
+            <span className="text-xs font-medium text-red-500">
+              {authError}
+            </span>
+          )}
+          {isAuthenticated && balance !== null && (
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
               <span className="text-sm font-medium text-gray-700">
@@ -62,21 +74,21 @@ export function Header() {
               </span>
             </div>
           )}
-          {connected && publicKey && (
+          {isAuthenticated && publicKey && (
             <span className="hidden md:inline text-xs text-gray-400 font-mono">
               {shortenAddress(publicKey.toBase58())}
             </span>
           )}
           <WalletMultiButton
             style={{
-              backgroundColor: connected ? "#f3f4f6" : "#7c3aed",
-              color: connected ? "#374151" : "#fff",
+              backgroundColor: isAuthenticated ? "#f3f4f6" : "#7c3aed",
+              color: isAuthenticated ? "#374151" : "#fff",
               borderRadius: "9999px",
               fontSize: "14px",
               fontWeight: "600",
               height: "38px",
               padding: "0 18px",
-              border: connected ? "1px solid #e5e7eb" : "none",
+              border: isAuthenticated ? "1px solid #e5e7eb" : "none",
               transition: "all 0.2s",
             }}
           />
