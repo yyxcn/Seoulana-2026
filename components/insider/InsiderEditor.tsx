@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -18,10 +18,17 @@ interface Props {
 }
 
 export function InsiderEditor({ onClose }: Props) {
-  const { publicKey, connected } = useWallet();
+  const { publicKey, connected, wallet, connect } = useWallet();
   const anchorWallet = useAnchorWallet();
   const { connection } = useConnection();
   const { visible: walletModalVisible, setVisible } = useWalletModal();
+  // 지갑이 select됐지만 아직 connect 안 된 경우 자동 connect
+  useEffect(() => {
+    if (wallet && !connected) {
+      connect().catch(() => {});
+    }
+  }, [wallet, connected, connect]);
+
   const [submitted, setSubmitted] = useState(false);
   const [txSignature, setTxSignature] = useState<string | null>(null);
 
