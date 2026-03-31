@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 interface AuthState {
   /** 서명 완료된 인증 상태 */
@@ -44,11 +45,23 @@ function buildSignMessage(address: string): string {
 }
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { publicKey, connected, signMessage, disconnect } = useWallet();
+  const { publicKey, connected, signMessage, disconnect, wallet, connect } =
+    useWallet();
+  const { visible: modalVisible } = useWalletModal();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const signingRef = useRef(false);
+  const prevModalVisibleRef = useRef(false);
+
+  // 모달이 닫힐 때(지갑 선택 완료) 자동 connect
+  // 페이지 로드 시에는 모달이 열린 적 없으므로 실행 안 됨
+  useEffect(() => {
+    if (prevModalVisibleRef.current && !modalVisible && wallet && !connected) {
+      connect().catch(() => {});
+    }
+    prevModalVisibleRef.current = modalVisible;
+  }, [modalVisible, wallet, connected, connect]);
 
   const requestSignature = useCallback(async () => {
     if (!publicKey || !signMessage || signingRef.current) return;
