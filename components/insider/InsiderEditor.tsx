@@ -21,7 +21,7 @@ export function InsiderEditor({ onClose }: Props) {
   const { publicKey, connected } = useWallet();
   const anchorWallet = useAnchorWallet();
   const { connection } = useConnection();
-  const { setVisible } = useWalletModal();
+  const { visible: walletModalVisible, setVisible } = useWalletModal();
   const [submitted, setSubmitted] = useState(false);
   const [txSignature, setTxSignature] = useState<string | null>(null);
 
@@ -192,7 +192,7 @@ export function InsiderEditor({ onClose }: Props) {
 
   if (!connected) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm ${walletModalVisible ? "pointer-events-none" : ""}`}>
         <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center">
           <Shield className="w-12 h-12 text-violet-500 mx-auto mb-4" />
           <h2 className="text-lg font-bold text-gray-900 mb-2">Connect Wallet to Continue</h2>

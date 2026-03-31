@@ -20,7 +20,7 @@ export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={SOLANA_RPC}>
-      <SolanaWalletProvider wallets={wallets}>
+      <SolanaWalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <AuthProvider>{children}</AuthProvider>
         </WalletModalProvider>
